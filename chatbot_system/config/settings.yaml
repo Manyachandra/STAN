@@ -1,0 +1,170 @@
+# System Configuration Settings
+
+# API Configuration
+api:
+  gemini:
+    model: "gemini-2.0-flash-exp"
+    temperature: 0.9 # Higher for more creative/varied responses
+    top_p: 0.95
+    top_k: 40
+    max_output_tokens: 500
+    safety_settings:
+      harassment: "BLOCK_NONE" # Handle in-app
+      hate_speech: "BLOCK_MEDIUM_AND_ABOVE"
+      sexually_explicit: "BLOCK_MEDIUM_AND_ABOVE"
+      dangerous_content: "BLOCK_MEDIUM_AND_ABOVE"
+
+  retry_config:
+    max_retries: 3
+    backoff_factor: 2
+    timeout_seconds: 30
+
+# Memory Configuration
+memory:
+  backend: "redis" # redis, mongodb, hybrid
+
+  user_profile:
+    max_interests: 20
+    max_preferences: 30
+    retention_days: 90
+
+  conversation_summary:
+    compress_after_messages: 10
+    max_summary_length: 500
+    keep_key_moments: 5
+
+  session_context:
+    max_recent_exchanges: 8
+    context_window_size: 5
+
+  cache:
+    ttl_seconds: 3600 # 1 hour
+    max_size_mb: 100
+
+  vector_search:
+    enabled: false # Enable for semantic memory search
+    embedding_model: "text-embedding-004"
+    similarity_threshold: 0.7
+
+# Token Optimization
+token_management:
+  max_prompt_tokens: 2000
+  reserve_for_response: 500
+  compression_threshold: 1500
+
+  summarization:
+    strategy: "extractive" # extractive, abstractive
+    compression_ratio: 0.3 # Target 30% of original length
+
+# Conversation Settings
+conversation:
+  max_message_length: 2000
+  min_response_length: 10
+  max_response_length: 500
+
+  tone_detection:
+    enabled: true
+    confidence_threshold: 0.6
+
+  emotional_adaptation:
+    enabled: true
+    transition_smoothness: 0.7 # 0 (instant) to 1 (gradual)
+
+  response_variety:
+    avoid_repetition_window: 5 # Don't repeat patterns within N messages
+    template_randomization: true
+
+# Safety & Validation
+safety:
+  hallucination_prevention:
+    enabled: true
+    memory_verification: true
+    confidence_threshold: 0.8
+
+  content_filtering:
+    enabled: true
+    block_inappropriate: true
+    profanity_handling: "allow_mild" # block_all, allow_mild, allow_all
+
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 60
+    burst_allowance: 10
+
+  input_validation:
+    max_length: 2000
+    strip_html: true
+    block_code_injection: true
+
+# Persona Consistency
+persona:
+  strict_mode: true # Never break character
+
+  identity_protection:
+    deflect_ai_questions: true
+    hide_system_details: true
+    maintain_backstory: true
+
+  memory_grounding:
+    require_verification: true
+    admit_uncertainty: true
+    handle_contradictions: "clarify" # clarify, update, ignore
+
+# Performance
+performance:
+  async_enabled: true
+  connection_pool_size: 50
+  request_timeout_seconds: 30
+
+  caching:
+    enabled: true
+    strategy: "redis" # redis, memory, none
+
+  monitoring:
+    enabled: true
+    track_latency: true
+    track_token_usage: true
+    track_error_rates: true
+
+# Logging
+logging:
+  level: "INFO" # DEBUG, INFO, WARNING, ERROR
+  format: "json" # json, text
+
+  log_conversations: true
+  anonymize_pii: true
+
+  destinations:
+    - console
+    - file
+
+  retention_days: 30
+
+# Feature Flags
+features:
+  multi_language: false
+  voice_mode: false
+  image_understanding: false
+  context_switching: true # Handle topic changes
+  proactive_memory_recall: true
+  sentiment_analysis: true
+
+# Scaling
+scaling:
+  max_concurrent_users: 1000
+  session_pool_size: 100
+  connection_timeout: 300 # seconds
+
+  auto_scaling:
+    enabled: false
+    min_instances: 2
+    max_instances: 10
+    target_cpu_percent: 70
+
+# Development
+development:
+  debug_mode: false
+  mock_api: false
+  verbose_logging: false
+  save_prompts: false # Save prompts for debugging
+
