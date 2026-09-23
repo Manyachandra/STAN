@@ -13,14 +13,16 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
 setup(
     name="chatbot_system",
     version="1.0.0",
-    author="AI Engineering Team",
-    author_email="engineering@example.com",
+    author="Manyachandra",
+    author_email="132090383+Manyachandra@users.noreply.github.com",
     description="Production-ready human-like conversational AI chatbot",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourorg/chatbot-system",
-    packages=["chatbot_system"] + [f"chatbot_system.{p}" for p in find_packages(exclude=["tests", "tests.*", "examples", "examples.*", "venv", "venv.*"])],
-    package_dir={"chatbot_system": "."},
+    url="https://github.com/Manyachandra/STAN",
+    packages=find_packages(exclude=["tests", "tests.*"]),
+    package_data={
+        "chatbot_system": ["config/*.yaml"],
+    },
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
@@ -47,12 +49,8 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "chatbot-server=examples.api_server:main",
+            "chatbot-server=chatbot_system.examples.api_server:main",
         ],
     },
     include_package_data=True,
-    package_data={
-        "chatbot_system": ["config/*.yaml"],
-    },
 )
-

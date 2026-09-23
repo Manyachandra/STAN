@@ -19,7 +19,6 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
 
 # Virtual Environment
 venv/
@@ -79,7 +78,6 @@ temp/
 
 # OS
 Thumbs.db
-.DS_Store
 
 # Production
 .production/
@@ -88,4 +86,3 @@ prod_config/
 # Backup
 *.bak
 *.backup
-

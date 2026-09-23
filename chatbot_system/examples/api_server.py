@@ -75,9 +75,9 @@ chatbot: Optional[ChatbotEngine] = None
 async def startup_event():
     """Initialize chatbot on startup."""
     global chatbot
-    
+
     print("Initializing chatbot system...")
-    
+
     chatbot = ChatbotEngine(
         persona_config_path=os.getenv("PERSONA_CONFIG", "config/persona.yaml"),
         redis_url=os.getenv("REDIS_URL"),
@@ -86,7 +86,7 @@ async def startup_event():
         enable_safety=True,
         enable_tone_adaptation=True
     )
-    
+
     # Health check
     health = await chatbot.health_check()
     if not health["overall"]:
@@ -109,6 +109,18 @@ def get_chatbot() -> ChatbotEngine:
     return chatbot
 
 
+def main() -> None:
+    """Run the API server directly."""
+    import uvicorn
+    uvicorn.run(
+        "chatbot_system.examples.api_server:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True,
+        log_level="info"
+    )
+
+
 @app.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(
     request: ChatRequest,
@@ -116,17 +128,17 @@ async def chat_endpoint(
 ):
     """
     Send a message to the chatbot.
-    
+
     Args:
         request: Chat request with user_id and message
-        
+
     Returns:
         Chat response with bot's reply
     """
     try:
         # Generate session ID if not provided
         session_id = request.session_id or str(uuid.uuid4())
-        
+
         # Process message
         response = await bot.chat(
             user_id=request.user_id,
@@ -134,7 +146,7 @@ async def chat_endpoint(
             session_id=session_id,
             metadata=request.metadata
         )
-        
+
         return ChatResponse(
             text=response.text,
             user_id=response.user_id,
@@ -143,7 +155,7 @@ async def chat_endpoint(
             response_time_ms=response.response_time_ms,
             metadata=response.metadata
         )
-    
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -155,21 +167,21 @@ async def start_conversation(
 ):
     """
     Start a new conversation with a greeting.
-    
+
     Args:
         request: Start conversation request
-        
+
     Returns:
         Chat response with greeting
     """
     try:
         session_id = request.session_id or str(uuid.uuid4())
-        
+
         response = await bot.start_conversation(
             user_id=request.user_id,
             session_id=session_id
         )
-        
+
         return ChatResponse(
             text=response.text,
             user_id=response.user_id,
@@ -178,29 +190,26 @@ async def start_conversation(
             response_time_ms=response.response_time_ms,
             metadata=response.metadata
         )
-    
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/users/{user_id}/stats")
-async def get_user_stats(
-    user_id: str,
-    bot: ChatbotEngine = Depends(get_chatbot)
-):
+async def user_stats(user_id: str, bot: ChatbotEngine = Depends(get_chatbot)):
     """
-    Get statistics for a specific user.
-    
+    Get statistics for a user.
+
     Args:
         user_id: User identifier
-        
+
     Returns:
         User statistics
     """
     try:
         stats = await bot.get_user_stats(user_id)
         return stats
-    
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -209,20 +218,20 @@ async def get_user_stats(
 async def health_check(bot: ChatbotEngine = Depends(get_chatbot)):
     """
     Check system health.
-    
+
     Returns:
         Health status of all components
     """
     try:
         checks = await bot.health_check()
-        
+
         status = "healthy" if checks["overall"] else "unhealthy"
-        
+
         return HealthResponse(
             status=status,
             checks=checks
         )
-    
+
     except Exception as e:
         return HealthResponse(
             status="error",
@@ -234,7 +243,7 @@ async def health_check(bot: ChatbotEngine = Depends(get_chatbot)):
 async def system_stats(bot: ChatbotEngine = Depends(get_chatbot)):
     """
     Get system-wide statistics.
-    
+
     Returns:
         System statistics
     """
@@ -252,13 +261,4 @@ async def root():
 
 
 if __name__ == "__main__":
-    import uvicorn
-    
-    uvicorn.run(
-        "api_server:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True,
-        log_level="info"
-    )
-
+    main()
